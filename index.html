@@ -180,12 +180,10 @@
             background-color: #f8f9fa;
         }
         .signature-img {
-            max-width: 80px;
-            max-height: 40px;
+            max-width: 120px;
+            max-height: 60px;
             display: block;
             margin: 0 auto;
-            border: 1px dashed #ccc;
-            border-radius: 4px;
         }
 
         /* Signature Canvas */
@@ -199,6 +197,14 @@
             margin-bottom: 15px;
         }
         canvas#signaturePad {
+            width: 100%;
+            height: 200px;
+            display: block;
+            background: white;
+        }
+
+        canvas#canvasTamuMasuk,
+        canvas#canvasSatpam {
             width: 100%;
             height: 200px;
             display: block;
@@ -243,6 +249,10 @@
         .form-select:focus {
             border-color: var(--kai-blue);
             box-shadow: 0 0 0 0.2rem rgba(30, 58, 138, 0.15);
+        }
+
+        .print-only {
+            display: none;
         }
 
         /* Responsive adjustments */
@@ -292,45 +302,364 @@
 
         /* Print Styles */
         @media print {
-            body { 
-                background: white; 
-                padding: 0; 
-                font-size: 11px;
+            @page {
+                size: A4 landscape;
+                margin: 10mm 8mm 8mm;
             }
-            .no-print { 
-                display: none !important; 
+
+            html,
+            body {
+                width: 100%;
+                min-width: 0;
+                background: #fff !important;
+                color: #000 !important;
+                font-family: Arial, Helvetica, sans-serif;
+                font-size: 7px;
+                line-height: 1.1;
             }
-            .table-container { 
-                box-shadow: none; 
-                padding: 0;
+
+            body {
+                padding: 0 !important;
+                margin: 0 !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
             }
-            .doc-header { 
-                border: 1px solid #000; 
+
+            .no-print,
+            .modal,
+            .toast-container {
+                display: none !important;
+            }
+
+            .container-fluid {
+                width: 100% !important;
+                max-width: none !important;
+                margin: 0 !important;
+                padding: 0 !important;
+            }
+
+            /* Kop formulir: logo, judul, lalu metadata di sisi kanan. */
+            .doc-header {
+                display: grid !important;
+                grid-template-columns: 15% 55% 30%;
+                width: 100%;
+                min-height: 25mm;
+                margin: 0 0 3mm !important;
+                border: 1px solid #000 !important;
+                border-radius: 0 !important;
                 page-break-after: avoid;
+                break-inside: avoid;
             }
-            .doc-header .col-logo, 
-            .doc-header .col-title { 
-                border-right: 1px solid #000; 
+
+            .doc-header .col-logo,
+            .doc-header .col-title,
+            .doc-header .col-info {
+                width: auto !important;
+                min-width: 0 !important;
+                padding: 2mm !important;
+                border-right: 1px solid #000 !important;
+                border-bottom: 0 !important;
             }
-            .info-table td, 
-            .table thead th, 
-            .table tbody td { 
-                border: 1px solid #000 !important; 
+
+            .doc-header .col-logo {
+                position: relative;
+                min-height: 25mm;
+                padding-bottom: 7mm !important;
+            }
+
+            .doc-header .col-logo img {
+                width: 38mm;
+                max-width: 100% !important;
+                max-height: 13mm !important;
+                object-fit: contain;
+            }
+
+            .doc-header .status-umum {
+                display: inline-block !important;
+                position: absolute !important;
+                bottom: 1.5mm !important;
+                left: 50% !important;
+                transform: translateX(-50%);
+                width: auto !important;
+                margin: 0 !important;
+                padding: .5mm 6mm !important;
+                border: 1px solid #28a745 !important;
+                border-radius: 0 !important;
+                color: #28a745 !important;
+                font-size: 6px !important;
+                line-height: 1 !important;
+            }
+
+            .print-left-info {
+                display: block !important;
+                width: 15% !important;
+                margin: -3mm 0 3mm !important;
+                border: 1px solid #000 !important;
+                border-top: 0 !important;
+                page-break-after: avoid;
+                break-inside: avoid;
+            }
+
+            .print-left-info table {
+                width: 100%;
+                border-collapse: collapse;
+                table-layout: fixed;
+            }
+
+            .print-left-info td {
+                padding: 1mm 1.5mm;
+                border-bottom: 1px solid #000;
                 color: #000;
+                font-size: 6px;
+                line-height: 1.05;
             }
-            .table thead th { 
-                background-color: #fff !important;
-                font-weight: bold;
+
+            .print-left-info tr:last-child td {
+                border-bottom: 0;
             }
-            .signature-img { 
-                border: 1px solid #000; 
+
+            .print-left-info td:first-child {
+                width: 42%;
+                border-right: 1px solid #000;
+                font-weight: 700;
             }
-            .table tbody tr {
+
+            .doc-header .col-title {
+                justify-content: center;
+                text-align: center;
+            }
+
+            .doc-header .col-info {
+                padding: 0 !important;
+                border-right: 0 !important;
+            }
+
+            .brand-text {
+                margin: 0 0 1mm !important;
+                color: #000 !important;
+                font-size: 9px !important;
+                line-height: 1.15;
+                font-weight: 700;
+            }
+
+            .system-text {
+                margin: 0 0 2mm !important;
+                color: #000 !important;
+                font-size: 8px !important;
+                letter-spacing: .5px;
+            }
+
+            .title-text {
+                margin: 0 !important;
+                margin-top: 2mm !important;
+                margin-left: -2mm !important;
+                margin-right: -2mm !important;
+                padding-top: 2mm !important;
+                padding-right: 2mm !important;
+                padding-left: 2mm !important;
+                border-top: 1px solid #000 !important;
+                width: calc(100% + 4mm) !important;
+                color: #000 !important;
+                font-size: 10px !important;
+                letter-spacing: 1px;
+            }
+
+            .info-table {
+                height: 100%;
+                font-size: 7px;
+            }
+
+            .info-table td {
+                padding: 1.2mm 1.5mm !important;
+                border: 0 !important;
+                border-bottom: 1px solid #000 !important;
+                color: #000 !important;
+                font-size: 7px !important;
+                line-height: 1.05;
+            }
+
+            .info-table tr:last-child td {
+                border-bottom: 0 !important;
+            }
+
+            .info-table td:first-child {
+                width: 31%;
+                border-right: 1px solid #000 !important;
+                background: #fff !important;
+                font-weight: 700;
+            }
+
+            /* Tabel utama dibuat seperti lembar kerja Word pada referensi. */
+            .table-container,
+            .table-responsive {
+                width: 100% !important;
+                max-width: none !important;
+                overflow: visible !important;
+                padding: 0 !important;
+                margin: 0 !important;
+                border: 0 !important;
+                border-radius: 0 !important;
+                box-shadow: none !important;
+            }
+
+            #guestTable {
+                width: 100% !important;
+                table-layout: fixed;
+                border-collapse: collapse !important;
+                border: 1px solid #000 !important;
+                margin: 0 !important;
+                font-size: 6.5px;
+                page-break-inside: auto;
+            }
+
+            #guestTable col:nth-child(1) { width: 3%; }
+            #guestTable col:nth-child(2) { width: 12%; }
+            #guestTable col:nth-child(3) { width: 10%; }
+            #guestTable col:nth-child(4) { width: 13%; }
+            #guestTable col:nth-child(5) { width: 10%; }
+            #guestTable col:nth-child(6) { width: 6%; }
+            #guestTable col:nth-child(7) { width: 6%; }
+            #guestTable col:nth-child(8) { width: 5%; }
+            #guestTable col:nth-child(9) { width: 7%; }
+            #guestTable col:nth-child(10) { width: 5%; }
+            #guestTable col:nth-child(11) { width: 7%; }
+            #guestTable col:nth-child(12) { width: 16%; }
+            #guestTable col:nth-child(13) { width: 0 !important; }
+
+            #guestTable thead {
+                display: table-header-group;
+            }
+
+            #guestTable th,
+            #guestTable td {
+                overflow-wrap: break-word;
+                word-break: normal;
+                hyphens: none;
+                border: 1px solid #000 !important;
+                color: #000 !important;
+            }
+
+            #guestTable thead th {
+                height: 7mm;
+                padding: 1mm .7mm !important;
+                background: #d9d9d9 !important;
+                font-size: 6.2px !important;
+                font-weight: 700;
+                line-height: 1.15;
+                text-align: center;
+                vertical-align: middle;
+                white-space: normal;
+            }
+
+            #guestTable thead tr:nth-child(2) th {
+                height: 5mm;
+                background: #f2f2f2 !important;
+                font-size: 6px !important;
+            }
+
+            #guestTable tbody tr {
                 page-break-inside: avoid;
+                break-inside: avoid;
             }
-            @page { 
-                size: landscape; 
-                margin: 0.5cm;
+
+            #guestTable tbody td {
+                height: 9mm;
+                padding: .8mm .7mm !important;
+                font-size: 6.8px !important;
+                line-height: 1.2;
+                vertical-align: middle;
+            }
+
+            #guestTable tbody tr:first-child td {
+                height: 16mm;
+            }
+
+            #guestTable tbody td b,
+            #guestTable tbody td small {
+                display: block;
+            }
+
+            #guestTable tbody td b {
+                line-height: 1.15;
+                margin-bottom: .4mm;
+            }
+
+            #guestTable tbody td small {
+                line-height: 1.1;
+                margin-top: .3mm;
+            }
+
+            #guestTable tbody td:nth-child(1),
+            #guestTable tbody td:nth-child(6),
+            #guestTable tbody td:nth-child(7),
+            #guestTable tbody td:nth-child(8),
+            #guestTable tbody td:nth-child(10) {
+                white-space: nowrap;
+                text-align: center;
+            }
+
+            #guestTable .signature-cell {
+                padding: .4mm !important;
+                text-align: center;
+                vertical-align: middle;
+                overflow: hidden;
+            }
+
+            #guestTable .signature-img {
+                display: block;
+                width: auto !important;
+                max-width: 95% !important;
+                max-height: 5mm !important;
+                object-fit: contain;
+                margin: 0 auto;
+            }
+
+            #guestTable tbody tr:first-child .signature-img {
+                max-height: 8mm !important;
+            }
+
+            #guestTable .signature-cell small {
+                display: block;
+                max-width: 100%;
+                margin-top: .4mm;
+                overflow: hidden;
+                font-size: 5px !important;
+                line-height: 1 !important;
+                white-space: nowrap;
+                text-overflow: ellipsis;
+            }
+
+            #guestTable th:nth-child(1), #guestTable td:nth-child(1) { width: 3%; }
+            #guestTable th:nth-child(2), #guestTable td:nth-child(2) { width: 12%; }
+            #guestTable th:nth-child(3), #guestTable td:nth-child(3) { width: 10%; }
+            #guestTable th:nth-child(4), #guestTable td:nth-child(4) { width: 13%; }
+            #guestTable th:nth-child(5), #guestTable td:nth-child(5) { width: 10%; }
+            #guestTable th:nth-child(6), #guestTable td:nth-child(6) { width: 6%; }
+            #guestTable th:nth-child(7), #guestTable td:nth-child(7) { width: 6%; }
+            #guestTable th:nth-child(8), #guestTable td:nth-child(8) { width: 5%; }
+            #guestTable th:nth-child(9), #guestTable td:nth-child(9) { width: 7%; }
+            #guestTable th:nth-child(10), #guestTable td:nth-child(10) { width: 5%; }
+            #guestTable th:nth-child(11), #guestTable td:nth-child(11) { width: 7%; }
+            #guestTable th:nth-child(12), #guestTable td:nth-child(12) { width: 15%; }
+
+            #guestTable th:nth-child(13),
+            #guestTable td:nth-child(13) {
+                display: none !important;
+            }
+
+            #guestTable .text-muted,
+            #guestTable .badge {
+                color: #000 !important;
+                background: transparent !important;
+                font-size: inherit !important;
+                font-weight: 400;
+                padding: 0 !important;
+            }
+
+            .signature-img {
+                max-width: 95% !important;
+                max-height: 8mm !important;
+                margin: 0 auto;
             }
         }
     </style>
@@ -360,31 +689,39 @@
             </div>
         </div>
 
+        <div class="print-only print-left-info">
+            <table>
+                <tr><td>No. Ref</td><td id="print-no-ref">-</td></tr>
+                <tr><td>Tanggal</td><td id="print-header-date">-</td></tr>
+                <tr><td>Business Area</td><td id="print-business-area">-</td></tr>
+            </table>
+        </div>
+
         <!-- DASHBOARD STATISTIK (Sembunyikan saat print) -->
         <div class="row mb-4 no-print">
             <div class="col-md-3">
-                <div class="card stat-card border-blue h-100 p-3 relative">
+                <div class="card stat-card border-blue h-100 p-3 relative" onclick="showSummary('today')" style="cursor: pointer;">
                     <h6 class="text-muted mb-1">Total Tamu Hari Ini</h6>
                     <h3 class="mb-0" id="stat-today">0</h3>
                     <i class="fas fa-users stat-icon text-primary"></i>
                 </div>
             </div>
             <div class="col-md-3">
-                <div class="card stat-card border-orange h-100 p-3 relative">
+                <div class="card stat-card border-orange h-100 p-3 relative" onclick="showSummary('active')" style="cursor: pointer;">
                     <h6 class="text-muted mb-1">Sedang Berkunjung</h6>
                     <h3 class="mb-0" id="stat-active">0</h3>
                     <i class="fas fa-user-clock stat-icon text-warning"></i>
                 </div>
             </div>
             <div class="col-md-3">
-                <div class="card stat-card border-green h-100 p-3 relative">
+                <div class="card stat-card border-green h-100 p-3 relative" onclick="showSummary('done')" style="cursor: pointer;">
                     <h6 class="text-muted mb-1">Sudah Keluar</h6>
                     <h3 class="mb-0" id="stat-done">0</h3>
                     <i class="fas fa-user-check stat-icon text-success"></i>
                 </div>
             </div>
             <div class="col-md-3">
-                <div class="card stat-card border-gray h-100 p-3 relative">
+                <div class="card stat-card border-gray h-100 p-3 relative" onclick="showSummary('total')" style="cursor: pointer;">
                     <h6 class="text-muted mb-1">Total Data Sistem</h6>
                     <h3 class="mb-0" id="stat-total">0</h3>
                     <i class="fas fa-database stat-icon text-secondary"></i>
@@ -402,7 +739,8 @@
                         <option value="active">Sedang Berkunjung</option>
                         <option value="done">Sudah Keluar</option>
                     </select>
-                    <input type="date" id="filterDate" class="form-control form-control-sm" style="width: 150px;">
+                    <input type="date" id="filterDateFrom" class="form-control form-control-sm" style="width: 140px;" title="Dari Tanggal">
+                    <input type="date" id="filterDateTo" class="form-control form-control-sm" style="width: 140px;" title="Sampai Tanggal">
                 </div>
                 <div class="d-flex gap-2">
                     <button class="btn btn-sm btn-success" onclick="exportExcel()"><i class="fas fa-file-excel"></i> Export Excel</button>
@@ -413,6 +751,10 @@
 
             <div class="table-responsive">
                 <table class="table table-bordered table-hover align-middle" id="guestTable">
+                    <colgroup>
+                        <col><col><col><col><col><col><col>
+                        <col><col><col><col><col><col>
+                    </colgroup>
                     <thead>
                         <tr>
                             <th rowspan="2" width="3%">NO</th>
@@ -463,10 +805,14 @@
                                 <input type="text" class="form-control form-control-sm" id="noRef" required>
                             </div>
                             <div class="col-md-4">
+                                <label class="form-label">Business Area <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control form-control-sm" id="businessArea" placeholder="Contoh: KAI DAOP 1" required>
+                            </div>
+                            <div class="col-md-2">
                                 <label class="form-label">No. Visitor / ID Card</label>
                                 <input type="text" class="form-control form-control-sm" id="noVisitor">
                             </div>
-                            <div class="col-md-4">
+                            <div class="col-md-2">
                                 <label class="form-label">No. HP <span class="text-danger">*</span></label>
                                 <input type="number" class="form-control form-control-sm" id="noHp" required>
                             </div>
@@ -498,30 +844,30 @@
                         <h6 class="mb-3 text-muted"><i class="fas fa-pen-nib"></i> Tanda Tangan & Otorisasi</h6>
                         
                         <div class="row">
-                            <!-- TTD Tamu Masuk -->
-                            <div class="col-md-6 text-center">
-                                <label class="form-label">Tanda Tangan Tamu</label>
-                                <div class="preview-ttd" id="previewTamuMasuk">
-                                    <span class="text-muted small">Belum ada TTD</span>
-                                </div>
+                         <!-- TTD Tamu Masuk -->
+                        <div class="col-md-6 text-center">
+                            <label class="form-label">Tanda Tangan Tamu</label>
+                                <div class="signature-pad-container">
+                                <canvas id="canvasTamuMasuk"></canvas>
+                            </div>
                                 <input type="hidden" id="ttdTamuMasukBase64">
-                                <button type="button" class="btn btn-sm btn-outline-primary w-100" onclick="openSignaturePad('tamu_masuk')">
-                                    <i class="fas fa-signature"></i> Buat TTD Tamu
+                                <button type="button" class="btn btn-sm btn-outline-danger w-100" onclick="clearCanvas('canvasTamuMasuk')">
+                                <i class="fas fa-eraser"></i> Bersihkan
                                 </button>
                             </div>
-                            
-                            <!-- TTD Satpam -->
-                            <div class="col-md-6 text-center">
-                                <label class="form-label">Tanda Tangan Petugas</label>
-                                <div class="preview-ttd" id="previewSatpam">
-                                    <span class="text-muted small">Belum ada TTD</span>
-                                </div>
+
+                        <!-- TTD Satpam -->
+                        <div class="col-md-6 text-center">
+                            <label class="form-label">Tanda Tangan Petugas</label>
+                                <div class="signature-pad-container">
+                                <canvas id="canvasSatpam"></canvas>
+                            </div>
                                 <input type="hidden" id="ttdSatpamBase64">
-                                <button type="button" class="btn btn-sm btn-outline-success w-100 mb-2" onclick="openSignaturePad('satpam')">
-                                    <i class="fas fa-signature"></i> Buat TTD Petugas
+                                <button type="button" class="btn btn-sm btn-outline-danger w-100 mb-2" onclick="clearCanvas('canvasSatpam')">
+                                <i class="fas fa-eraser"></i> Bersihkan
                                 </button>
                                 <input type="text" class="form-control form-control-sm text-center" id="namaSatpam" placeholder="Nama Petugas Jaga" required>
-                            </div>
+                            </div> 
                         </div>
                     </form>
                 </div>
@@ -583,6 +929,36 @@
     </div>
 
 
+    <!-- Modal Rangkuman Dashboard -->
+    <div class="modal fade" id="summaryModal" tabindex="-1">
+        <div class="modal-dialog modal-xl modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="summaryModalTitle">Rangkuman</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-sm">
+                            <thead>
+                                <tr>
+                                    <th>TANGGAL</th>
+                                    <th>NAMA</th>
+                                    <th>INSTANSI</th>
+                                    <th>KEPERLUAN</th>
+                                    <th>PERSONIL DITUJU</th>
+                                    <th>JAM MASUK</th>
+                                    <th>JAM KELUAR</th>
+                                </tr>
+                            </thead>
+                            <tbody id="summaryTableBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Bootstrap JS Bundle -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
@@ -601,7 +977,7 @@
         let guests = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
         
         // Modal Instances
-        let formModal, signatureModal, checkoutModal;
+        let formModal, signatureModal, checkoutModal, summaryModal;
         
         // Signature Pad Variables
         let canvas, ctx, isDrawing = false;
@@ -614,13 +990,16 @@
                 // Set header date
                 const today = new Date();
                 const options = { day: 'numeric', month: 'long', year: 'numeric' };
-                document.getElementById('header-date').innerText = today.toLocaleDateString('id-ID', options);
+                const formattedDate = today.toLocaleDateString('id-ID', options);
+                document.getElementById('header-date').innerText = formattedDate;
+                document.getElementById('print-header-date').innerText = formattedDate;
 
                 // Init modal instances with error handling
                 try {
                     formModal = new bootstrap.Modal(document.getElementById('formModal'));
                     signatureModal = new bootstrap.Modal(document.getElementById('signatureModal'));
                     checkoutModal = new bootstrap.Modal(document.getElementById('checkoutModal'));
+                    summaryModal = new bootstrap.Modal(document.getElementById('summaryModal'));
                 } catch(error) {
                     console.error('Bootstrap modal initialization error:', error);
                 }
@@ -657,7 +1036,10 @@
                 
                 if(searchInput) searchInput.addEventListener('input', renderTable);
                 if(filterStatus) filterStatus.addEventListener('change', renderTable);
-                if(filterDate) filterDate.addEventListener('change', renderTable);
+                const filterDateFrom = document.getElementById('filterDateFrom');
+                const filterDateTo = document.getElementById('filterDateTo');
+                if(filterDateFrom) filterDateFrom.addEventListener('change', renderTable);
+                if(filterDateTo) filterDateTo.addEventListener('change', renderTable);
 
                 // Initial render
                 renderTable();
@@ -708,6 +1090,7 @@
                 id: id ? id : GUEST_ID_PREFIX + Date.now(),
                 tanggal: dateStr,
                 noRef: sanitizeInput(document.getElementById('noRef').value),
+                businessArea: sanitizeInput(document.getElementById('businessArea').value),
                 noVisitor: sanitizeInput(document.getElementById('noVisitor').value),
                 noHp: noHp,
                 nama: sanitizeInput(document.getElementById('nama').value),
@@ -776,29 +1159,35 @@
 
             const searchTerm = document.getElementById('searchInput').value.toLowerCase().trim();
             const statusFilter = document.getElementById('filterStatus').value;
-            const dateFilter = document.getElementById('filterDate').value;
+            const dateFrom = document.getElementById('filterDateFrom').value;
+            const dateTo = document.getElementById('filterDateTo').value;
 
-            // Apply filters
+        // Apply filters
             let filteredGuests = guests.filter(guest => {
-                // Search filter
-                const matchSearch = 
-                    guest.nama.toLowerCase().includes(searchTerm) || 
-                    guest.instansi.toLowerCase().includes(searchTerm) || 
-                    guest.noVisitor.toLowerCase().includes(searchTerm) ||
-                    guest.noRef.toLowerCase().includes(searchTerm) ||
-                    guest.noHp.includes(searchTerm);
-                
-                // Status filter
+        // Search filter
+            const matchSearch = 
+                guest.nama.toLowerCase().includes(searchTerm) || 
+                guest.instansi.toLowerCase().includes(searchTerm) || 
+                guest.noVisitor.toLowerCase().includes(searchTerm) ||
+                guest.noRef.toLowerCase().includes(searchTerm) ||
+                guest.noHp.includes(searchTerm);
+        
+        // Status filter
                 let matchStatus = true;
                 if(statusFilter === 'active') matchStatus = guest.jamKeluar === null || guest.jamKeluar === '';
                 if(statusFilter === 'done') matchStatus = guest.jamKeluar !== null && guest.jamKeluar !== '';
 
-                // Date filter
+        // Date range filter
                 let matchDate = true;
-                if(dateFilter && dateFilter !== '') matchDate = guest.tanggal === dateFilter;
+                if(dateFrom && dateFrom !== '') matchDate = matchDate && (guest.tanggal >= dateFrom);
+                if(dateTo && dateTo !== '') matchDate = matchDate && (guest.tanggal <= dateTo);
 
                 return matchSearch && matchStatus && matchDate;
             });
+
+            const printGuest = filteredGuests[0] || guests[0];
+            document.getElementById('print-no-ref').innerText = printGuest?.noRef || '-';
+            document.getElementById('print-business-area').innerText = printGuest?.businessArea || '-';
 
             // Render rows
             if(filteredGuests.length === 0) {
@@ -812,13 +1201,12 @@
                 
                 // Create signature images or dash
                 const ttdMasukImg = guest.ttdMasuk ? `<img src="${guest.ttdMasuk}" class="signature-img" alt="TTD Masuk">` : '-';
-                const ttdKeluarImg = guest.ttdKeluar ? `<img src="${guest.ttdKeluar}" class="signature-img" alt="TTD Keluar">` : '-';
+                const ttdKeluarImg = guest.ttdKeluar ? `<img src="${guest.ttdKeluar}" class="signature-img" alt="TTD Keluar">` : (guest.jamKeluar ? '-' : `<button class="btn btn-sm btn-outline-warning" onclick="openCheckoutModal('${guest.id}')"><i class="fas fa-signature"></i> TTD</button>`);
                 const ttdSatpamImg = guest.ttdSatpam ? `<img src="${guest.ttdSatpam}" class="signature-img" alt="TTD ${guest.namaSatpam}"><br><small class="text-muted">${sanitizeInput(guest.namaSatpam)}</small>` : '-';
                 const jamKeluarText = guest.jamKeluar && guest.jamKeluar !== '' ? guest.jamKeluar : '<span class="badge bg-warning text-dark">Visiting</span>';
 
                 // Action buttons
-                const actionButtons = !guest.jamKeluar ? 
-                    `<button class="btn btn-warning" title="Check Out" onclick="openCheckoutModal('${guest.id}')" aria-label="Check Out ${guest.nama}"><i class="fas fa-sign-out-alt"></i></button>` : '';
+                const actionButtons = '';
 
                 tr.innerHTML = `
                     <td class="text-center">${index + 1}</td>
@@ -830,12 +1218,12 @@
                     <td class="text-center">${guest.noVisitor || '-'}</td>
                     
                     <td class="text-center"><b>${guest.jamMasuk}</b></td>
-                    <td class="text-center p-1">${ttdMasukImg}</td>
+                    <td class="text-center p-1 signature-cell">${ttdMasukImg}</td>
                     
                     <td class="text-center">${jamKeluarText}</td>
-                    <td class="text-center p-1">${ttdKeluarImg}</td>
+                    <td class="text-center p-1 signature-cell">${ttdKeluarImg}</td>
                     
-                    <td class="text-center p-1">${ttdSatpamImg}</td>
+                    <td class="text-center p-1 signature-cell">${ttdSatpamImg}</td>
                     
                     <td class="text-center no-print">
                         <div class="btn-group btn-group-sm" role="group" aria-label="Aksi">
@@ -865,23 +1253,64 @@
             document.getElementById('stat-done').innerText = doneTotal;
         }
 
+        function showSummary(type) {
+            const today = new Date().toISOString().split('T')[0];
+            let filtered = [];
+            let title = '';
+
+            if(type === 'today') {
+                filtered = guests.filter(g => g.tanggal === today);
+                title = 'Total Tamu Hari Ini';
+            } else if(type === 'active') {
+                filtered = guests.filter(g => g.jamKeluar === null || g.jamKeluar === '');
+                title = 'Sedang Berkunjung';
+            } else if(type === 'done') {
+                filtered = guests.filter(g => g.jamKeluar !== null && g.jamKeluar !== '');
+                title = 'Sudah Keluar';
+            } else if(type === 'total') {
+                filtered = guests;
+                title = 'Total Data Sistem';
+            }
+
+            document.getElementById('summaryModalTitle').innerText = title;
+
+            const tbody = document.getElementById('summaryTableBody');
+            tbody.innerHTML = '';
+
+            if(filtered.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="7" class="text-center text-muted py-3">Tidak ada data.</td></tr>`;
+            } else {
+                filtered.forEach(g => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td class="text-center">${g.tanggal}</td>
+                        <td>${sanitizeInput(g.nama)}</td>
+                        <td>${sanitizeInput(g.instansi)}</td>
+                        <td>${sanitizeInput(g.keperluan)}</td>
+                        <td>${sanitizeInput(g.personil)}</td>
+                        <td class="text-center">${g.jamMasuk}</td>
+                        <td class="text-center">${g.jamKeluar || '-'}</td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            }
+
+    summaryModal.show();
+}
+
         // --- Actions (Edit, Delete, Checkout) ---
 
         function openAddModal() {
-            document.getElementById('guestForm').reset();
-            document.getElementById('dataId').value = '';
-            
-            // Clear all signatures and previews
-            ['ttdTamuMasukBase64', 'ttdSatpamBase64', 'ttdTamuKeluarBase64'].forEach(id => {
-                document.getElementById(id).value = '';
-            });
-            
-            ['previewTamuMasuk', 'previewSatpam', 'previewTamuKeluar'].forEach(id => {
-                document.getElementById(id).innerHTML = '<span class="text-muted small">Belum ada TTD</span>';
-            });
-            
-            formModal.show();
-        }
+    document.getElementById('guestForm').reset();
+    document.getElementById('dataId').value = '';
+    document.getElementById('ttdTamuMasukBase64').value = '';
+    document.getElementById('ttdSatpamBase64').value = '';
+    formModal.show();
+    setTimeout(() => {
+        initAllSignaturePads();
+                resetFormSignaturePads();
+    }, 300);
+}
 
         function editData(id) {
             const guest = guests.find(g => g.id === id);
@@ -892,6 +1321,7 @@
 
             document.getElementById('dataId').value = guest.id;
             document.getElementById('noRef').value = guest.noRef || '';
+            document.getElementById('businessArea').value = guest.businessArea || '';
             document.getElementById('noVisitor').value = guest.noVisitor || '';
             document.getElementById('noHp').value = guest.noHp || '';
             document.getElementById('nama').value = guest.nama || '';
@@ -903,20 +1333,17 @@
             // Set Signatures Preview
             if(guest.ttdMasuk) {
                 document.getElementById('ttdTamuMasukBase64').value = guest.ttdMasuk;
-                document.getElementById('previewTamuMasuk').innerHTML = `<img src="${guest.ttdMasuk}" alt="Preview TTD Masuk">`;
             } else {
                 document.getElementById('ttdTamuMasukBase64').value = '';
-                document.getElementById('previewTamuMasuk').innerHTML = '<span class="text-muted small">Belum ada TTD</span>';
             }
             
             if(guest.ttdSatpam) {
                 document.getElementById('ttdSatpamBase64').value = guest.ttdSatpam;
-                document.getElementById('previewSatpam').innerHTML = `<img src="${guest.ttdSatpam}" alt="Preview TTD Petugas">`;
             } else {
                 document.getElementById('ttdSatpamBase64').value = '';
-                document.getElementById('previewSatpam').innerHTML = '<span class="text-muted small">Belum ada TTD</span>';
             }
 
+            resetFormSignaturePads();
             formModal.show();
         }
 
@@ -949,9 +1376,8 @@
 
             document.getElementById('checkoutId').value = id;
             document.getElementById('ttdTamuKeluarBase64').value = '';
-            document.getElementById('previewTamuKeluar').innerHTML = '<span class="text-muted small">Belum ada TTD</span>';
             
-            checkoutModal.show();
+            openSignaturePad('tamu_keluar');   // 👈 langsung buka canvas
         }
 
         function processCheckout() {
@@ -979,169 +1405,273 @@
             Swal.fire('Check Out Sukses', 'Waktu keluar berhasil dicatat.', 'success');
         }
 
-        // --- Signature Pad Logic ---
-        
-        function initSignaturePad() {
-            canvas = document.getElementById('signaturePad');
-            ctx = canvas.getContext('2d');
-            
-            // Handle resizing
+        // --- Signature Pad Logic (untuk Modal Checkout - TTD Tamu Keluar) ---
+function initSignaturePad() {
+    canvas = document.getElementById('signaturePad');
+    ctx = canvas.getContext('2d');
+    resizeCanvas();
+    window.addEventListener('resize', resizeCanvas);
+    canvas.addEventListener('mousedown', startDrawing);
+    canvas.addEventListener('mousemove', draw);
+    canvas.addEventListener('mouseup', stopDrawing);
+    canvas.addEventListener('mouseout', stopDrawing);
+    canvas.addEventListener('touchstart', handleTouchStart, {passive: false});
+    canvas.addEventListener('touchmove', handleTouchMove, {passive: false});
+    canvas.addEventListener('touchend', stopDrawing);
+}
+
+function resizeCanvas() {
+    canvasRatio = window.devicePixelRatio || 1;
+    const displayWidth = canvas.offsetWidth;
+    const displayHeight = canvas.offsetHeight;
+    canvas.width = displayWidth * canvasRatio;
+    canvas.height = displayHeight * canvasRatio;
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.strokeStyle = "#000000";
+    ctx.lineWidth = 2 * canvasRatio;
+    ctx.lineCap = "round";
+    ctx.lineJoin = "round";
+}
+
+function getPosition(event) {
+    const rect = canvas.getBoundingClientRect();
+    let clientX, clientY;
+    if (event.touches && event.touches.length > 0) {
+        clientX = event.touches[0].clientX;
+        clientY = event.touches[0].clientY;
+    } else {
+        clientX = event.clientX;
+        clientY = event.clientY;
+    }
+    return {
+        x: (clientX - rect.left) * (canvas.width / rect.width),
+        y: (clientY - rect.top) * (canvas.height / rect.height)
+    };
+}
+
+function startDrawing(e) {
+    isDrawing = true;
+    const pos = getPosition(e);
+    lastX = pos.x;
+    lastY = pos.y;
+}
+
+function draw(e) {
+    if (!isDrawing) return;
+    const pos = getPosition(e);
+    ctx.beginPath();
+    ctx.moveTo(lastX, lastY);
+    ctx.lineTo(pos.x, pos.y);
+    ctx.stroke();
+    lastX = pos.x;
+    lastY = pos.y;
+}
+
+function stopDrawing() {
+    isDrawing = false;
+}
+
+function handleTouchStart(e) {
+    e.preventDefault();
+    startDrawing(e);
+}
+
+function handleTouchMove(e) {
+    e.preventDefault();
+    draw(e);
+}
+
+function openSignaturePad(target) {
+    if(!Object.values(SIGNATURE_TARGETS).includes(target)) {
+        Swal.fire('Error', 'Target signature tidak valid!', 'error');
+        return;
+    }
+    document.getElementById('currentSignatureTarget').value = target;
+    signatureModal.show();
+    setTimeout(() => {
+        try {
             resizeCanvas();
-            window.addEventListener('resize', resizeCanvas);
-
-            // Mouse Events
-            canvas.addEventListener('mousedown', startDrawing);
-            canvas.addEventListener('mousemove', draw);
-            canvas.addEventListener('mouseup', stopDrawing);
-            canvas.addEventListener('mouseout', stopDrawing);
-
-            // Touch Events (Untuk Layar Sentuh/HP)
-            canvas.addEventListener('touchstart', handleTouchStart, {passive: false});
-            canvas.addEventListener('touchmove', handleTouchMove, {passive: false});
-            canvas.addEventListener('touchend', stopDrawing);
+            clearSignature();
+        } catch(error) {
+            console.error('Canvas initialization error:', error);
+            Swal.fire('Error', 'Gagal menginisialisasi kanvas tanda tangan.', 'error');
         }
+    }, 300);
+}
 
-        function resizeCanvas() {
-            canvasRatio = window.devicePixelRatio || 1;
-            const displayWidth = canvas.offsetWidth;
-            const displayHeight = canvas.offsetHeight;
-            
-            // Set actual canvas resolution
-            canvas.width = displayWidth * canvasRatio;
-            canvas.height = displayHeight * canvasRatio;
-            
-            // Scale context to match CSS size
-            ctx.scale(canvasRatio, canvasRatio);
-            
-            // Apply drawing styles
-            ctx.strokeStyle = "#000000";
-            ctx.lineWidth = 2;
-            ctx.lineCap = "round";
-            ctx.lineJoin = "round";
-        }
+function clearSignature() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+}
 
-        function getPosition(event) {
-            const rect = canvas.getBoundingClientRect();
-            let clientX, clientY;
+function saveSignature() {
+    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    const data = imageData.data;
+    let isEmpty = true;
+    for (let i = 3; i < data.length; i += 4) {
+        if (data[i] !== 0) { isEmpty = false; break; }
+    }
+    if(isEmpty) {
+        Swal.fire('Info', 'Coretan tanda tangan masih kosong. Silakan tanda tangan terlebih dahulu.', 'info');
+        return;
+    }
+    const dataURL = trimCanvasToDataURL(canvas);
+    const target = document.getElementById('currentSignatureTarget').value;
+    const targetMap = {
+        [SIGNATURE_TARGETS.TAMU_MASUK]: { input: 'ttdTamuMasukBase64', preview: 'previewTamuMasuk' },
+        [SIGNATURE_TARGETS.SATPAM]: { input: 'ttdSatpamBase64', preview: 'previewSatpam' },
+        [SIGNATURE_TARGETS.TAMU_KELUAR]: { input: 'ttdTamuKeluarBase64', preview: 'previewTamuKeluar' }
+    };
+    if(!targetMap[target]) {
+        Swal.fire('Error', 'Target signature tidak valid!', 'error');
+        return;
+    }
+    const { input: inputId, preview: previewId } = targetMap[target];
+    document.getElementById(inputId).value = dataURL;
+    const preview = document.getElementById(previewId);
+    if (preview) {
+        preview.innerHTML = `<img src="${dataURL}" alt="TTD Preview">`;
+    }
+    signatureModal.hide();
+    if(target === SIGNATURE_TARGETS.TAMU_KELUAR) {
+        processCheckout();
+    } else {
+        Swal.fire('Sukses', 'Tanda tangan berhasil disimpan.', 'success');
+    }
+}
 
-            if (event.touches && event.touches.length > 0) {
-                clientX = event.touches[0].clientX;
-                clientY = event.touches[0].clientY;
-            } else {
-                clientX = event.clientX;
-                clientY = event.clientY;
+// --- Signature Pad Baru (langsung di Form Tambah Tamu) ---
+const canvasContexts = {};
+
+function initAllSignaturePads() {
+    ['canvasTamuMasuk', 'canvasSatpam'].forEach(id => {
+        const cv = document.getElementById(id);
+        if (!cv || cv.dataset.signatureReady === 'true') return;
+        const cctx = cv.getContext('2d');
+        canvasContexts[id] = { canvas: cv, ctx: cctx, isDrawing: false, lastX: 0, lastY: 0 };
+        cv.dataset.signatureReady = 'true';
+        resizeCanvasEl(id);
+
+        cv.addEventListener('mousedown', e => startDrawingNew(id, e));
+        cv.addEventListener('mousemove', e => drawNew(id, e));
+        cv.addEventListener('mouseup', () => stopDrawingNew(id));
+        cv.addEventListener('mouseout', () => stopDrawingNew(id));
+
+        cv.addEventListener('touchstart', e => { e.preventDefault(); startDrawingNew(id, e); }, {passive: false});
+        cv.addEventListener('touchmove', e => { e.preventDefault(); drawNew(id, e); }, {passive: false});
+        cv.addEventListener('touchend', () => stopDrawingNew(id));
+    });
+}
+
+function resizeCanvasEl(id) {
+    const state = canvasContexts[id];
+    const ratio = window.devicePixelRatio || 1;
+    const w = state.canvas.offsetWidth;
+    const h = state.canvas.offsetHeight;
+    state.canvas.width = w * ratio;
+    state.canvas.height = h * ratio;
+    state.ctx.setTransform(1, 0, 0, 1, 0, 0);
+    state.ctx.strokeStyle = "#000000";
+    state.ctx.lineWidth = 2 * ratio;
+    state.ctx.lineCap = "round";
+    state.ctx.lineJoin = "round";
+}
+
+function getPosNew(cv, event) {
+    const rect = cv.getBoundingClientRect();
+    let clientX, clientY;
+    if (event.touches && event.touches.length > 0) {
+        clientX = event.touches[0].clientX;
+        clientY = event.touches[0].clientY;
+    } else {
+        clientX = event.clientX;
+        clientY = event.clientY;
+    }
+    return {
+        x: (clientX - rect.left) * (cv.width / rect.width),
+        y: (clientY - rect.top) * (cv.height / rect.height)
+    };
+}
+
+function startDrawingNew(id, e) {
+    const state = canvasContexts[id];
+    state.isDrawing = true;
+    const pos = getPosNew(state.canvas, e);
+    state.lastX = pos.x;
+    state.lastY = pos.y;
+}
+
+function trimCanvasToDataURL(sourceCanvas) {
+    const sourceContext = sourceCanvas.getContext('2d');
+    const imageData = sourceContext.getImageData(0, 0, sourceCanvas.width, sourceCanvas.height);
+    const pixels = imageData.data;
+    let minX = sourceCanvas.width;
+    let minY = sourceCanvas.height;
+    let maxX = -1;
+    let maxY = -1;
+
+    for (let y = 0; y < sourceCanvas.height; y++) {
+        for (let x = 0; x < sourceCanvas.width; x++) {
+            if (pixels[(y * sourceCanvas.width + x) * 4 + 3] > 10) {
+                minX = Math.min(minX, x);
+                minY = Math.min(minY, y);
+                maxX = Math.max(maxX, x);
+                maxY = Math.max(maxY, y);
             }
-
-            return {
-                x: clientX - rect.left,
-                y: clientY - rect.top
-            };
         }
+    }
 
-        function startDrawing(e) {
-            isDrawing = true;
-            const pos = getPosition(e);
-            lastX = pos.x;
-            lastY = pos.y;
-        }
+    if (maxX < 0) return '';
 
-        function draw(e) {
-            if (!isDrawing) return;
-            const pos = getPosition(e);
-            
-            ctx.beginPath();
-            ctx.moveTo(lastX, lastY);
-            ctx.lineTo(pos.x, pos.y);
-            ctx.stroke();
-            
-            lastX = pos.x;
-            lastY = pos.y;
-        }
+    const padding = 12;
+    const trimmedCanvas = document.createElement('canvas');
+    trimmedCanvas.width = maxX - minX + 1 + padding * 2;
+    trimmedCanvas.height = maxY - minY + 1 + padding * 2;
+    trimmedCanvas.getContext('2d').drawImage(
+        sourceCanvas,
+        minX,
+        minY,
+        maxX - minX + 1,
+        maxY - minY + 1,
+        padding,
+        padding,
+        maxX - minX + 1,
+        maxY - minY + 1
+    );
+    return trimmedCanvas.toDataURL('image/png');
+}
 
-        function stopDrawing() {
-            isDrawing = false;
-        }
+function drawNew(id, e) {
+    const state = canvasContexts[id];
+    if (!state.isDrawing) return;
+    const pos = getPosNew(state.canvas, e);
+    state.ctx.beginPath();
+    state.ctx.moveTo(state.lastX, state.lastY);
+    state.ctx.lineTo(pos.x, pos.y);
+    state.ctx.stroke();
+    state.lastX = pos.x;
+    state.lastY = pos.y;
+    const inputMap = { canvasTamuMasuk: 'ttdTamuMasukBase64', canvasSatpam: 'ttdSatpamBase64' };
+    document.getElementById(inputMap[id]).value = trimCanvasToDataURL(state.canvas);
+}
 
-        function handleTouchStart(e) {
-            e.preventDefault(); // Mencegah scrolling halaman saat TTD
-            startDrawing(e);
-        }
+function stopDrawingNew(id) {
+    canvasContexts[id].isDrawing = false;
+}
 
-        function handleTouchMove(e) {
-            e.preventDefault();
-            draw(e);
-        }
+function clearCanvas(id) {
+    const state = canvasContexts[id];
+    if (!state) return;
+    state.ctx.clearRect(0, 0, state.canvas.width, state.canvas.height);
+    const inputMap = { canvasTamuMasuk: 'ttdTamuMasukBase64', canvasSatpam: 'ttdSatpamBase64' };
+    document.getElementById(inputMap[id]).value = '';
+}
 
-        function openSignaturePad(target) {
-            // Validate target
-            if(!Object.values(SIGNATURE_TARGETS).includes(target)) {
-                Swal.fire('Error', 'Target signature tidak valid!', 'error');
-                return;
-            }
-
-            document.getElementById('currentSignatureTarget').value = target;
-            
-            // Show modal and wait for it to render
-            signatureModal.show();
-            
-            // Wait for modal animation to complete before resizing canvas
-            setTimeout(() => {
-                try {
-                    resizeCanvas();
-                    clearSignature();
-                } catch(error) {
-                    console.error('Canvas initialization error:', error);
-                    Swal.fire('Error', 'Gagal menginisialisasi kanvas tanda tangan.', 'error');
-                }
-            }, 300);
-        }
-
-        function clearSignature() {
-            // Clear entire canvas
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-        }
-
-        function saveSignature() {
-            // Check if canvas is empty
-            const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-            const data = imageData.data;
-            let isEmpty = true;
-            
-            // Check if any pixel is not white/transparent
-            for (let i = 3; i < data.length; i += 4) {
-                if (data[i] !== 0) { // Alpha channel
-                    isEmpty = false;
-                    break;
-                }
-            }
-
-            if(isEmpty) {
-                Swal.fire('Info', 'Coretan tanda tangan masih kosong. Silakan tanda tangan terlebih dahulu.', 'info');
-                return;
-            }
-
-            const dataURL = canvas.toDataURL("image/png");
-            const target = document.getElementById('currentSignatureTarget').value;
-
-            // Map target to input IDs
-            const targetMap = {
-                [SIGNATURE_TARGETS.TAMU_MASUK]: { input: 'ttdTamuMasukBase64', preview: 'previewTamuMasuk' },
-                [SIGNATURE_TARGETS.SATPAM]: { input: 'ttdSatpamBase64', preview: 'previewSatpam' },
-                [SIGNATURE_TARGETS.TAMU_KELUAR]: { input: 'ttdTamuKeluarBase64', preview: 'previewTamuKeluar' }
-            };
-
-            if(!targetMap[target]) {
-                Swal.fire('Error', 'Target signature tidak valid!', 'error');
-                return;
-            }
-
-            const { input: inputId, preview: previewId } = targetMap[target];
-            document.getElementById(inputId).value = dataURL;
-            document.getElementById(previewId).innerHTML = `<img src="${dataURL}" alt="TTD Preview">`;
-            
-            signatureModal.hide();
-            Swal.fire('Sukses', 'Tanda tangan berhasil disimpan.', 'success');
-        }
+function resetFormSignaturePads() {
+    Object.keys(canvasContexts).forEach(id => {
+        resizeCanvasEl(id);
+        canvasContexts[id].ctx.clearRect(0, 0, canvasContexts[id].canvas.offsetWidth, canvasContexts[id].canvas.offsetHeight);
+    });
+}
 
         // --- Export Feature ---
         function exportExcel() {
