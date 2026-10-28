@@ -294,7 +294,7 @@
                 title = 'Sedang Berkunjung';
             } else if(type === 'done') {
                 filtered = guests.filter(g => g.jamKeluar !== null && g.jamKeluar !== '');
-                title = 'Sudah Keluar';
+                title = 'Telah Selesai Berkunjung';
             } else if(type === 'total') {
                 filtered = guests;
                 title = 'Total Data Sistem';
