@@ -1,0 +1,402 @@
+﻿<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistem Buku Tamu Digital - PT Kereta Api Indonesia (Persero)</title>
+    
+    <!-- Google Fonts: Plus Jakarta Sans & Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome 6 Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <link rel="stylesheet" href="buku_tamu_kai_modern.css">
+</head>
+<body>
+
+    <!-- AMBIENT FLOATING BACKGROUND ANIMATION -->
+    <div class="ambient-bg-dots" aria-hidden="true">
+        <div class="bg-particle bg-particle-one"></div>
+        <div class="bg-particle bg-particle-two"></div>
+        <div class="bg-particle bg-particle-three"></div>
+    </div>
+
+    <div class="container-fluid py-4 px-lg-4">
+        
+        <!-- HEADER KOP DOKUMEN MODERN -->
+        <header class="app-header d-flex align-items-center justify-content-between flex-wrap">
+            <div class="d-flex align-items-center gap-3">
+                <div class="logo-box">
+                    <img src="logo-kai.png" alt="Logo PT KAI">
+                </div>
+                <div>
+                    <h5 class="mb-0 fw-bold text-white tracking-wide">PT KERETA API INDONESIA (PERSERO)</h5>
+                    <p class="mb-0 text-white-50 small">Sistem Informasi Manajemen Tamu & Otorisasi Pengunjung</p>
+                </div>
+            </div>
+
+            <div class="header-meta">
+                <table class="m-0">
+                    <tr>
+                        <td>No. Dokumen:</td>
+                        <td><strong>FK.SM/TI/014.001/10-2023</strong></td>
+                    </tr>
+                    <tr>
+                        <td>Tanggal Efektif:</td>
+                        <td><strong id="header-date">12 Oktober 2023</strong></td>
+                    </tr>
+                    <tr>
+                        <td>Status Revisi:</td>
+                        <td><strong>Edisi V01 (Umum)</strong></td>
+                    </tr>
+                </table>
+            </div>
+        </header>
+
+        <section class="print-document-header print-only" aria-label="Kop dokumen buku tamu">
+            <div class="print-logo-cell">
+                <img src="logo-kai.png" alt="Logo PT KAI">
+                <span>UMUM</span>
+            </div>
+            <div class="print-title-cell">
+                <div>
+                    <strong>PT KERETA API INDONESIA (PERSERO)</strong>
+                    <span>SISTEM INFORMASI</span>
+                </div>
+                <h1>BUKU TAMU</h1>
+            </div>
+            <table class="print-document-meta">
+                <tbody>
+                    <tr><th>Nomor</th><td>FK.SM/TI/014.001/10-2023</td></tr>
+                    <tr><th>Tanggal</th><td id="print-date">-</td></tr>
+                    <tr><th>Edisi</th><td>V01 2023</td></tr>
+                    <tr><th>Halaman</th><td>1 dari 1</td></tr>
+                </tbody>
+            </table>
+        </section>
+        <div class="print-left-info print-only">
+            <table>
+                <tbody>
+                    <tr><th>No. Ref</th><td id="print-no-ref">-</td></tr>
+                    <tr><th>Tanggal</th><td id="print-guest-date">-</td></tr>
+                    <tr><th>Business Area</th><td id="print-business-area">-</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- DASHBOARD RINGKASAN CARDS -->
+        <div class="row g-3 mb-4 no-print stat-card-row">
+            <div class="col-12 col-sm-6 col-xl-3">
+                <div class="stat-card fade-in-up stat-card-delay-1" data-summary="today" role="button" tabindex="0">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div>
+                            <div class="label">Hari Ini</div>
+                            <div class="number mt-1" id="stat-today">0</div>
+                        </div>
+                        <div class="icon-wrapper icon-blue">
+                            <i class="fa-solid fa-users"></i>
+                        </div>
+                    </div>
+                    <div class="small text-muted mt-2"><i class="fa-solid fa-arrow-trend-up text-success me-1"></i>Tamu teregistrasi hari ini</div>
+                </div>
+            </div>
+
+            <div class="col-12 col-sm-6 col-xl-3">
+                <div class="stat-card fade-in-up stat-card-delay-2" data-summary="active" role="button" tabindex="0">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div>
+                            <div class="label">Sedang Berkunjung</div>
+                            <div class="number mt-1" id="stat-active">0</div>
+                        </div>
+                        <div class="icon-wrapper icon-orange">
+                            <i class="fa-solid fa-user-clock"></i>
+                        </div>
+                    </div>
+                    <div class="small text-muted mt-2"><i class="fa-solid fa-clock text-warning me-1"></i>Belum melakukan checkout</div>
+                </div>
+            </div>
+
+            <div class="col-12 col-sm-6 col-xl-3">
+                <div class="stat-card fade-in-up stat-card-delay-3" data-summary="done" role="button" tabindex="0">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div>
+                            <div class="label">Selesai Berkunjung</div>
+                            <div class="number mt-1" id="stat-done">0</div>
+                        </div>
+                        <div class="icon-wrapper icon-green">
+                            <i class="fa-solid fa-user-check"></i>
+                        </div>
+                    </div>
+                    <div class="small text-muted mt-2"><i class="fa-solid fa-circle-check text-success me-1"></i>Telah checkout lengkap</div>
+                </div>
+            </div>
+
+            <div class="col-12 col-sm-6 col-xl-3">
+                <div class="stat-card fade-in-up stat-card-delay-4" data-summary="total" role="button" tabindex="0">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div>
+                            <div class="label">Total Arsip</div>
+                            <div class="number mt-1" id="stat-total">0</div>
+                        </div>
+                        <div class="icon-wrapper icon-gray">
+                            <i class="fa-solid fa-database"></i>
+                        </div>
+                    </div>
+                    <div class="small text-muted mt-2"><i class="fa-solid fa-server me-1"></i>Total histori dalam database</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TOOLBAR PENCARIAN & FILTER -->
+        <div class="toolbar-card no-print">
+            <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
+                <div class="d-flex align-items-center flex-wrap gap-2 flex-grow-1">
+                    <div class="position-relative flex-grow-1 search-wrapper">
+                        <i class="fa-solid fa-magnifying-glass position-absolute top-50 start-0 translate-middle-y ms-3 text-muted"></i>
+                        <input type="text" id="searchInput" class="form-control ps-5" placeholder="Cari Nama / Instansi / No. Visitor...">
+                    </div>
+
+                    <select id="filterStatus" class="form-select filter-status">
+                        <option value="all">Semua Status Kunjungan</option>
+                        <option value="active">Sedang Berkunjung</option>
+                        <option value="done">Selesai Berkunjung</option>
+                    </select>
+
+                    <div class="d-flex align-items-center gap-1">
+                        <input type="date" id="filterDateFrom" class="form-control" title="Dari Tanggal">
+                        <span class="text-muted">-</span>
+                        <input type="date" id="filterDateTo" class="form-control" title="Sampai Tanggal">
+                    </div>
+                </div>
+
+                <div class="d-flex align-items-center gap-2">
+                    <button class="btn btn-kai-secondary" data-action="export">
+                        <i class="fa-solid fa-file-excel text-success me-1"></i> Export Excel
+                    </button>
+                    <button class="btn btn-kai-secondary" data-action="print">
+                        <i class="fa-solid fa-print me-1"></i> Cetak Dokumen
+                    </button>
+                    <button class="btn btn-kai-primary" data-action="add">
+                        <i class="fa-solid fa-plus me-1"></i> Tambah Tamu Baru
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- TABEL DATA UTAMA -->
+        <div class="table-card">
+            <div class="table-responsive">
+                <table class="custom-table" id="guestTable">
+                    <thead>
+                        <tr>
+                            <th rowspan="2">NO</th>
+                            <th rowspan="2">NAMA</th>
+                            <th rowspan="2">INSTANSI</th>
+                            <th rowspan="2">KEPERLUAN</th>
+                            <th rowspan="2">PERSONIL YANG DITUJU</th>
+                            <th rowspan="2">NO HP</th>
+                            <th rowspan="2">NO VISITOR</th>
+                            <th colspan="2">MASUK</th>
+                            <th colspan="2">KELUAR</th>
+                            <th rowspan="2">PETUGAS / SATPAM (TTD &amp; NAMA)</th>
+                            <th rowspan="2" class="no-print-col">AKSI</th>
+                        </tr>
+                        <tr>
+                            <th>JAM</th>
+                            <th>TTD</th>
+                            <th>JAM</th>
+                            <th>TTD</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableBody">
+                        <!-- Content rendered dynamically via JS -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- MODAL FORM REGISTRASI TAMU -->
+    <div class="modal fade" id="formModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title fs-6 fw-bold"><i class="fa-solid fa-user-plus me-2"></i> Form Registrasi Tamu KAI</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="guestForm">
+                        <input type="hidden" id="dataId">
+                        
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold small">Business Area / Unit Kerja <span class="text-danger">*</span></label>
+                                <select class="form-select" id="businessArea" required>
+                                    <option value="" selected disabled>-- Pilih Business Area / Unit Kerja --</option>
+                                    <optgroup label="Daerah Operasi (DAOP)">
+                                        <option value="DAOP 1 JAKARTA">DAOP 1 Jakarta</option>
+                                        <option value="DAOP 2 BANDUNG">DAOP 2 Bandung</option>
+                                        <option value="DAOP 3 CIREBON">DAOP 3 Cirebon</option>
+                                        <option value="DAOP 4 SEMARANG">DAOP 4 Semarang</option>
+                                        <option value="DAOP 5 PURWOKERTO">DAOP 5 Purwokerto</option>
+                                        <option value="DAOP 6 YOGYAKARTA">DAOP 6 Yogyakarta</option>
+                                        <option value="DAOP 7 MADIUN">DAOP 7 Madiun</option>
+                                        <option value="DAOP 8 SURABAYA">DAOP 8 Surabaya</option>
+                                        <option value="DAOP 9 JEMBER">DAOP 9 Jember</option>
+                                    </optgroup>
+                                    <optgroup label="Divisi Regional (DIVRE)">
+                                        <option value="DIVRE I SUMATERA UTARA">DIVRE I Sumatera Utara</option>
+                                        <option value="DIVRE II SUMATERA BARAT">DIVRE II Sumatera Barat</option>
+                                        <option value="DIVRE III PALEMBANG">DIVRE III Palembang</option>
+                                        <option value="DIVRE IV TANJUNGKARANG">DIVRE IV Tanjungkarang</option>
+                                    </optgroup>
+                                    <optgroup label="Unit Lainnya">
+                                        <option value="KANTOR PUSAT KAI">Kantor Pusat KAI</option>
+                                    </optgroup>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold small">Nomor Kartu Visitor</label>
+                                <input type="text" class="form-control bg-light" id="noVisitor" readonly placeholder="Otomatis dibuat sistem">
+                            </div>
+                        </div>
+
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold small">Nama Lengkap Tamu <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="nama" placeholder="Masukkan nama sesuai KTP" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold small">Instansi / Perusahaan <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="instansi" placeholder="Asal instansi / perusahaan" required>
+                            </div>
+                        </div>
+
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold small">No. HP / WhatsApp <span class="text-danger">*</span></label>
+                                <input type="tel" class="form-control" id="noHp" maxlength="13" inputmode="numeric" placeholder="08xxxxxxxxxx" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold small">Personil yang Dituju <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="personil" placeholder="Nama pejabat/staf KAI" required>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label fw-semibold small">Keperluan Kunjungan <span class="text-danger">*</span></label>
+                            <textarea class="form-control" id="keperluan" rows="3" placeholder="Jelaskan secara singkat maksud dan tujuan kunjungan..." required></textarea>
+                        </div>
+
+                        <div class="p-3 bg-light rounded-3 border">
+                            <h6 class="fw-bold fs-7 text-uppercase tracking-wider text-muted mb-3"><i class="fa-solid fa-signature me-1"></i> Otorisasi & Tanda Tangan Digital</h6>
+                            
+                            <div class="row g-3">
+                                <div class="col-md-6 text-center">
+                                    <label class="form-label small fw-semibold">Tanda Tangan Tamu <span class="text-danger">*</span></label>
+                                    <div class="signature-pad-container">
+                                        <canvas id="canvasTamuMasuk" class="draw-canvas"></canvas>
+                                    </div>
+                                    <input type="hidden" id="ttdTamuMasukBase64">
+                                    <button type="button" class="btn btn-sm btn-link text-danger text-decoration-none mt-1" data-clear-canvas="canvasTamuMasuk">
+                                        <i class="fa-solid fa-eraser me-1"></i> Hapus TTD Tamu
+                                    </button>
+                                </div>
+
+                                <div class="col-md-6 text-center">
+                                    <label class="form-label small fw-semibold">Tanda Tangan Petugas Saksi <span class="text-danger">*</span></label>
+                                    <div class="signature-pad-container">
+                                        <canvas id="canvasSatpam" class="draw-canvas"></canvas>
+                                    </div>
+                                    <input type="hidden" id="ttdSatpamBase64">
+                                    <button type="button" class="btn btn-sm btn-link text-danger text-decoration-none mt-1 mb-2" data-clear-canvas="canvasSatpam">
+                                        <i class="fa-solid fa-eraser me-1"></i> Hapus TTD Petugas
+                                    </button>
+                                    <input type="text" class="form-control form-control-sm text-center" id="namaSatpam" placeholder="Nama Lengkap Petugas Saksi" required>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-kai-secondary" data-bs-dismiss="modal">Batal</button>
+                    <button type="button" class="btn btn-kai-primary" data-action="save">Simpan Data Registrasi</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL CHECKOUT TAMU -->
+    <div class="modal fade" id="checkoutModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title fs-6 fw-bold"><i class="fa-solid fa-right-from-bracket me-2"></i> Konfirmasi Selesai Berkunjung</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body text-center">
+                    <p class="text-muted small mb-3">Silakan minta tamu untuk memberikan tanda tangan konfirmasi kepulangan di bawah ini.</p>
+                    <input type="hidden" id="checkoutId">
+                    
+                    <div class="signature-pad-container mx-auto mb-2 checkout-signature-pad">
+                        <canvas id="canvasTamuKeluar" class="draw-canvas"></canvas>
+                    </div>
+                    <input type="hidden" id="ttdTamuKeluarBase64">
+                    <button type="button" class="btn btn-sm btn-link text-danger text-decoration-none" data-clear-canvas="canvasTamuKeluar">
+                        <i class="fa-solid fa-eraser me-1"></i> Hapus TTD
+                    </button>
+                </div>
+                <div class="modal-footer justify-content-center">
+                    <button type="button" class="btn btn-kai-secondary" data-bs-dismiss="modal">Batal</button>
+                    <button type="button" class="btn btn-kai-primary" data-action="checkout">Proses Checkout Selesai</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL RANGKUMAN STATISTIK -->
+    <div class="modal fade" id="summaryModal" tabindex="-1">
+        <div class="modal-dialog modal-xl modal-dialog-scrollable modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title fs-6 fw-bold" id="summaryModalTitle">Rangkuman Data</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-0">
+                    <div class="table-responsive">
+                        <table class="custom-table">
+                            <thead>
+                                <tr>
+                                    <th>TANGGAL</th>
+                                    <th>NAMA</th>
+                                    <th>INSTANSI</th>
+                                    <th>KEPERLUAN</th>
+                                    <th>PERSONIL DITUJU</th>
+                                    <th>JAM MASUK</th>
+                                    <th>JAM KELUAR</th>
+                                </tr>
+                            </thead>
+                            <tbody id="summaryTableBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap 5 JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.js"></script>
+
+    <!-- JAVASCRIPT APP LOGIC -->
+    <script src="buku_tamu_kai_modern.js" defer></script>
+</body>
+</html>
